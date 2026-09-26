@@ -13,6 +13,7 @@ export default function RegisterPage() {
     phone: "",
     password: "",
     confirmPassword: "",
+    role: "STUDENT",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -44,7 +45,7 @@ export default function RegisterPage() {
           email: formData.email,
           phone: formData.phone,
           password: formData.password,
-          role: "STUDENT",
+          role: formData.role,
         }),
       });
 
@@ -115,6 +116,20 @@ export default function RegisterPage() {
                   placeholder="Enter phone number" 
                 />
               </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+              <select
+                name="role"
+                value={formData.role}
+                onChange={handleChange as any}
+                className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              >
+                <option value="STUDENT">Student</option>
+                <option value="TEACHER">Teacher</option>
+                <option value="ADMIN">Admin</option>
+              </select>
             </div>
 
             <div>
