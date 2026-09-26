@@ -1,0 +1,278 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name      String?
+  email     String?  @unique
+  phone     String?  @unique
+  password  String
+  role      String   @default("STUDENT") // ADMIN, TEACHER, STUDENT
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student   Student?
+  teacher   Teacher?
+}
+
+model Student {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String @db.ObjectId   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  fatherName      String?
+  motherName      String?
+  dob             DateTime?
+  gender          String?
+  address         String?
+  city            String?
+  state           String?
+  school          String?
+  prevQualification String?
+  admissionDate   DateTime @default(now())
+  
+  enrollments     Enrollment[]
+  attendances     Attendance[]
+  testResults     TestResult[]
+  feePayments     FeePayment[]
+}
+
+model Teacher {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String @db.ObjectId   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  employeeId      String?  @unique
+  qualification   String?
+  experience      String?
+  joiningDate     DateTime @default(now())
+  salaryType      String?  // Monthly, Per Class, etc.
+  monthlySalary   Float?
+  perClassPayment Float?
+
+  subjects        TeacherSubject[]
+  batches         Batch[]
+  notes           Note[]
+  videos          Video[]
+  tests           Test[]
+  attendances     Attendance[]
+  salaryPayments  TeacherPayment[]
+}
+
+model Course {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name            String   // Class X, JEE Main, SSC CGL
+  category        String   // School Education, Senior Secondary, Engineering, SSC
+  durationMonths  Int?
+  
+  admissionFee    Float    @default(0)
+  monthlyFee      Float    @default(0)
+  totalFee        Float    @default(0)
+
+  batches         Batch[]
+  enrollments     Enrollment[]
+  notes           Note[]
+  videos          Video[]
+  tests           Test[]
+}
+
+model Subject {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  
+  teachers        TeacherSubject[]
+  batches         Batch[]
+  notes           Note[]
+  videos          Video[]
+  tests           Test[]
+}
+
+model TeacherSubject {
+  teacherId       String @db.ObjectId
+  subjectId       String @db.ObjectId
+  teacher         Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  subject         Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  @@unique([teacherId, subjectId])
+}
+
+model Batch {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name            String   // E.g., Class X Mathematics
+  courseId        String @db.ObjectId
+  course          Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  subjectId       String @db.ObjectId
+  subject         Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  teacherId       String @db.ObjectId
+  teacher         Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  
+  roomNumber      String?
+  mode            String?  // Online, Offline
+  days            String?  // Monday / Wednesday / Friday
+  startTime       String?  // 5:00 PM
+  endTime         String?  // 6:00 PM
+  status          String   @default("Active") // Active, Completed
+  
+  enrollments     Enrollment[]
+  attendances     Attendance[]
+}
+
+model Enrollment {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  studentId       String @db.ObjectId
+  student         Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  courseId        String @db.ObjectId
+  course          Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  batchId         String? @db.ObjectId
+  batch           Batch?   @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  
+  status          String   @default("Active") // Pending, Active, Completed, Cancelled
+  totalCourseFee  Float    @default(0)
+  admissionFee    Float    @default(0)
+  discount        Float    @default(0)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model FeePayment {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  studentId       String @db.ObjectId
+  student         Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  amount          Float
+  paymentDate     DateTime @default(now())
+  paymentMethod   String   // Cash, UPI, Bank Transfer, Card
+  status          String   // Paid, Partial, Pending, Overdue
+  dueDate         DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model TeacherPayment {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  teacherId       String @db.ObjectId
+  teacher         Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  
+  amount          Float
+  paymentDate     DateTime @default(now())
+  paymentType     String   // Salary, Bonus
+  status          String   // Paid, Pending
+  
+  createdAt       DateTime @default(now())
+}
+
+model Attendance {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  studentId       String? @db.ObjectId
+  student         Student? @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  teacherId       String? @db.ObjectId
+  teacher         Teacher? @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  batchId         String @db.ObjectId
+  batch           Batch    @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  
+  date            DateTime
+  status          String   // Present, Absent, Late
+  
+  createdAt       DateTime @default(now())
+}
+
+model Note {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  title           String
+  description     String?
+  fileUrl         String
+  fileType        String   // PDF, DOC, etc.
+  
+  courseId        String? @db.ObjectId
+  course          Course?  @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  subjectId       String? @db.ObjectId
+  subject         Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  teacherId       String? @db.ObjectId
+  teacher         Teacher? @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  
+  createdAt       DateTime @default(now())
+}
+
+model Video {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  title           String
+  description     String?
+  videoUrl        String
+  thumbnailUrl    String?
+  duration        String?
+  category        String?  // Regular, Revision, Doubt
+  
+  courseId        String? @db.ObjectId
+  course          Course?  @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  subjectId       String? @db.ObjectId
+  subject         Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  teacherId       String? @db.ObjectId
+  teacher         Teacher? @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  
+  createdAt       DateTime @default(now())
+}
+
+model Test {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  title           String
+  description     String?
+  totalMarks      Int
+  durationMinutes Int?
+  date            DateTime?
+  type            String?  // Online, Mock, Chapter
+  
+  courseId        String? @db.ObjectId
+  course          Course?  @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  subjectId       String? @db.ObjectId
+  subject         Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  teacherId       String? @db.ObjectId
+  teacher         Teacher? @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  
+  results         TestResult[]
+  createdAt       DateTime @default(now())
+}
+
+model TestResult {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  testId          String @db.ObjectId
+  test            Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
+  studentId       String @db.ObjectId
+  student         Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  marks           Float
+  correctAnswers  Int?
+  wrongAnswers    Int?
+  rank            Int?
+  
+  createdAt       DateTime @default(now())
+}
+
+model Announcement {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  title           String
+  content         String
+  targetAudience  String   // All, Students, Teachers
+  
+  createdAt       DateTime @default(now())
+}
+
+model ContactMessage {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  phone     String
+  email     String
+  course    String
+  message   String
+  status    String   @default("Unread") // Unread, Read, Replied
+  createdAt DateTime @default(now())
+}
