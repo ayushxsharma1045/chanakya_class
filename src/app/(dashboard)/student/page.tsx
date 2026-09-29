@@ -27,7 +27,7 @@ export default function StudentDashboardPage() {
       >
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Student Dashboard</h1>
-          <p className="text-gray-600 text-sm">Welcome back to your learning portal.</p>
+          <p className="text-gray-600 text-sm mt-1">Welcome back to your learning portal.</p>
         </div>
       </motion.div>
 
@@ -92,67 +92,37 @@ export default function StudentDashboardPage() {
         </motion.div>
       </motion.div>
 
+      {/* Quick Links */}
       <motion.div 
         variants={containerVariants}
         initial="hidden"
         animate="show"
-        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+        className="grid grid-cols-1 md:grid-cols-4 gap-4"
       >
-        {/* Recent Study Material */}
-        <motion.div variants={itemVariants} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold text-gray-900">Recent Study Material</h3>
-            <Link href="/student/notes" className="text-primary text-sm font-semibold hover:underline">View All</Link>
-          </div>
-          <div className="space-y-4">
-            {[
-              { title: "Ray Optics Chapter Notes", subject: "Physics", date: "Oct 24", type: "PDF" },
-              { title: "Integration Formulas Sheet", subject: "Mathematics", date: "Oct 22", type: "PDF" },
-              { title: "Organic Chemistry Revision", subject: "Chemistry", date: "Oct 20", type: "PDF" },
-            ].map((note, i) => (
-              <motion.div key={i} whileHover={{ x: 5 }} className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer group">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-red-100 text-red-600 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                    <FileText className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-gray-900 text-sm group-hover:text-primary transition-colors">{note.title}</h4>
-                    <p className="text-xs text-gray-500">{note.subject} • {note.date}</p>
-                  </div>
-                </div>
-                <button className="text-gray-400 hover:text-primary transition-colors">
-                  <Download className="w-5 h-5" />
-                </button>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Recent Video Lectures */}
-        <motion.div variants={itemVariants} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold text-gray-900">Recent Video Lectures</h3>
-            <Link href="/student/videos" className="text-primary text-sm font-semibold hover:underline">View All</Link>
-          </div>
-          <div className="space-y-4">
-            {[
-              { title: "Electromagnetic Induction Part 2", subject: "Physics", duration: "1h 15m" },
-              { title: "Definite Integrals Properties", subject: "Mathematics", duration: "55m" },
-              { title: "Chemical Kinetics Revision", subject: "Chemistry", duration: "1h 30m" },
-            ].map((video, i) => (
-              <motion.div key={i} whileHover={{ x: 5 }} className="flex items-center gap-4 p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors group cursor-pointer">
-                <div className="w-24 h-16 bg-gray-200 rounded-lg relative overflow-hidden shrink-0 flex items-center justify-center">
-                   <div className="absolute inset-0 bg-primary-900/10 group-hover:bg-primary-900/20 transition-colors"></div>
-                   <PlayCircle className="w-8 h-8 text-white z-10 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-gray-900 text-sm group-hover:text-primary transition-colors line-clamp-1">{video.title}</h4>
-                  <p className="text-xs text-gray-500 mt-1">{video.subject} • {video.duration}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+        <Link href="/student/course">
+          <motion.div variants={itemVariants} whileHover={{ scale: 1.02 }} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3 hover:border-primary transition-colors cursor-pointer">
+            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><BookOpen className="w-5 h-5"/></div>
+            <span className="font-semibold text-gray-800">My Courses</span>
+          </motion.div>
+        </Link>
+        <Link href="/student/timetable">
+          <motion.div variants={itemVariants} whileHover={{ scale: 1.02 }} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3 hover:border-primary transition-colors cursor-pointer">
+            <div className="p-2 bg-green-50 text-green-600 rounded-lg"><Calendar className="w-5 h-5"/></div>
+            <span className="font-semibold text-gray-800">Timetable</span>
+          </motion.div>
+        </Link>
+        <Link href="/student/notes">
+          <motion.div variants={itemVariants} whileHover={{ scale: 1.02 }} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3 hover:border-primary transition-colors cursor-pointer">
+            <div className="p-2 bg-yellow-50 text-yellow-600 rounded-lg"><FileText className="w-5 h-5"/></div>
+            <span className="font-semibold text-gray-800">Study Materials</span>
+          </motion.div>
+        </Link>
+        <Link href="/student/videos">
+          <motion.div variants={itemVariants} whileHover={{ scale: 1.02 }} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3 hover:border-primary transition-colors cursor-pointer">
+            <div className="p-2 bg-purple-50 text-purple-600 rounded-lg"><PlayCircle className="w-5 h-5"/></div>
+            <span className="font-semibold text-gray-800">Video Lectures</span>
+          </motion.div>
+        </Link>
       </motion.div>
     </div>
   );

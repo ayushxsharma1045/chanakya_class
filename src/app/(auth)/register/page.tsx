@@ -66,7 +66,7 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4 py-12">
       <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl overflow-hidden">
         <div className="bg-primary-950 p-6 text-center">
-          <h1 className="text-2xl font-bold text-white mb-2">Student Registration</h1>
+          <h1 className="text-2xl font-bold text-white mb-2">Account Registration</h1>
           <p className="text-white/80 text-sm">Join Chanakya Classes and start your journey</p>
         </div>
 

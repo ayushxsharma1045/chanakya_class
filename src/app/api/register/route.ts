@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     if (role === "ADMIN") {
       const adminCount = await prisma.user.count({ where: { role: "ADMIN" } });
       if (adminCount >= 2) {
-        return NextResponse.json({ message: "Maximum number of admins reached" }, { status: 403 });
+        return NextResponse.json({ message: "Admins are full" }, { status: 403 });
       }
     }
 
